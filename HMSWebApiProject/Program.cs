@@ -23,7 +23,9 @@ namespace HMSWebApiProject
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddAutoMapper(cfg => { cfg.LicenseKey = " "; }, typeof(Program).Assembly);
 
+            //****************************************************************************************************************
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
