@@ -1,6 +1,5 @@
 ﻿using DTOs.DataTransferObjects;
 using Entities.Enums;
-using System.Collections.Generic;
 
 namespace Services.Contracts
 {

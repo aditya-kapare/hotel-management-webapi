@@ -2,12 +2,15 @@ using Contracts;
 using HMSWebApiProject.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using Repositories;
+using Repositories.DataSeeder;
+using System.Text.Json.Serialization;
 
 namespace HMSWebApiProject
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -22,12 +25,25 @@ namespace HMSWebApiProject
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+
+            builder.Services
+                .AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(
+                        new JsonStringEnumConverter());
+                });
+
             builder.Services.AddAutoMapper(cfg => { cfg.LicenseKey = " "; }, typeof(Program).Assembly);
 
             //****************************************************************************************************************
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
+                await SeedRunner.RunAsync(db);
+            }
             // Configure the HTTP request pipeline.
 
             // Configure the HTTP request pipeline.(middelware)

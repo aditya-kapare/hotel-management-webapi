@@ -22,6 +22,7 @@ namespace HMSWebApiProject.Extensions
                         context.Response.StatusCode = contextFeature.Error switch
                         {
                             NotFoundException => StatusCodes.Status404NotFound,
+                            AlreadyExistsException => StatusCodes.Status409Conflict,
                             _ => StatusCodes.Status500InternalServerError
                         };
 

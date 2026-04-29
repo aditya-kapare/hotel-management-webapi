@@ -16,8 +16,7 @@ namespace Entities.Models
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int RoomNo { get; set; }
-
-
+        public bool DoesExist { get; set; } = true;
         [Required]
         public RoomType RoomType { get; set; }
 

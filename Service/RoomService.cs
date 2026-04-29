@@ -27,8 +27,8 @@ namespace Services
         public async Task<IEnumerable<RoomDTO>> GetAllRooms(bool trackChanges)
         {
             var rooms = await _repository.Room.GetAllRoomsAsync(trackChanges);
-            var roomDtos = _mapper.Map<IEnumerable<RoomDTO>>(rooms);
-            return roomDtos;
+            var activeRooms = rooms.Where(r => r.DoesExist);
+            return _mapper.Map<IEnumerable<RoomDTO>>(activeRooms);
         }
 
         public async Task<RoomDTO> GetRoomByRoomNo(int roomNo, bool trackChanges)
@@ -36,7 +36,7 @@ namespace Services
             var room = await _repository.Room
                 .GetRoomByRoomNoAsync(roomNo, trackChanges);
 
-            if (room is null)
+            if (room is null || !room.DoesExist)
                 throw new RoomNotFoundException(roomNo);
 
             var roomDto = _mapper.Map<RoomDTO>(room);
@@ -48,7 +48,7 @@ namespace Services
             var rooms = await _repository.Room.GetAllRoomsAsync(trackChanges);
 
             var filteredRooms = rooms
-                .Where(r => r.RoomType == roomType);
+                .Where(r => r.DoesExist && r.RoomType == roomType);
 
             var roomDtos = _mapper.Map<IEnumerable<RoomDTO>>(filteredRooms);
             return roomDtos;
@@ -56,13 +56,27 @@ namespace Services
 
         public async Task<RoomDTO> CreateRoom(RoomForCreationDTO room)
         {
-            var roomEntity = _mapper.Map<Room>(room);
 
+            var existingRoom = await _repository.Room
+                    .GetRoomByRoomNoAsync(room.RoomNo, trackChanges: true);
+
+            if (existingRoom is not null)
+            {
+                if (existingRoom.DoesExist)
+                    throw new RoomAlreadyExistsException(room.RoomNo);
+
+                // restore soft-deleted room
+                _mapper.Map(room, existingRoom);
+                existingRoom.DoesExist = true;
+                existingRoom.AvailabilityStatus = AvailabilityStatus.Available;
+                _repository.Save();
+                return _mapper.Map<RoomDTO>(existingRoom);
+            }
+            var roomEntity = _mapper.Map<Room>(room);
             _repository.Room.CreateRoom(roomEntity);
             _repository.Save();
 
-            var roomDto = _mapper.Map<RoomDTO>(roomEntity);
-            return roomDto;
+            return _mapper.Map<RoomDTO>(roomEntity);
         }
 
         public async Task UpdateRoom(int roomNo, RoomForUpdateDTO roomForUpdate, bool trackChanges)
@@ -81,14 +95,17 @@ namespace Services
 
         public async Task DeleteRoom(int roomNo, bool trackChanges)
         {
-            var room = await _repository.Room
-                .GetRoomByRoomNoAsync(roomNo, trackChanges);
 
-            if (room is null)
+            var room = await _repository.Room.GetRoomByRoomNoAsync(roomNo, trackChanges);
+
+            if (room is null || !room.DoesExist)
                 throw new RoomNotFoundException(roomNo);
 
-            _repository.Room.DeleteRoom(room);
+            room.DoesExist = false;
+            room.AvailabilityStatus = AvailabilityStatus.Inavailable;
+            _repository.Room.UpdateRoom(room);
             _repository.Save();
+
         }
     }
 }
