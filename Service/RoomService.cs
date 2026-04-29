@@ -75,7 +75,7 @@ namespace Services
 
             _mapper.Map(roomForUpdate, roomEntity);
 
-            _repository.Room.UpdateRoom(roomEntity);
+            //_repository.Room.UpdateRoom(roomEntity);
             _repository.Save();
         }
 

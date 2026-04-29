@@ -57,7 +57,6 @@ namespace HMSWebApiProject
             app.MapControllers();
 
             app.Run();
-
         }
     }
 }
