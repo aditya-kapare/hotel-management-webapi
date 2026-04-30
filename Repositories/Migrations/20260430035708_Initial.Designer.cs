@@ -12,7 +12,7 @@ using Repositories;
 namespace Repositories.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20260429115114_Initial")]
+    [Migration("20260430035708_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -47,11 +47,21 @@ namespace Repositories.Migrations
                     b.Property<int>("Gender")
                         .HasColumnType("int");
 
+                    b.Property<string>("GovernmentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DriverId");
+
+                    b.HasIndex(new[] { "GovernmentId" }, "IX_Unique_GovernmentId")
+                        .IsUnique();
 
                     b.ToTable("CabDrivers");
                 });

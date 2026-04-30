@@ -16,6 +16,7 @@ namespace Repositories.DataSeeder
             {
                 new CabDriver
                 {
+                    GovernmentId = "MNQPK8368A",
                     Name = "Ramesh Jadhav",
                     Age = 35,
                     Gender = Gender.Male,
@@ -24,6 +25,7 @@ namespace Repositories.DataSeeder
                 },
                 new CabDriver
                 {
+                    GovernmentId = "34289120490",
                     Name = "Suresh Patil",
                     Age = 42,
                     Gender = Gender.Male,
@@ -32,6 +34,7 @@ namespace Repositories.DataSeeder
                 },
                 new CabDriver
                 {
+                    GovernmentId = "DF349898DJ",
                     Name = "Amit Verma",
                     Age = 30,
                     Gender = Gender.Male,
@@ -40,6 +43,7 @@ namespace Repositories.DataSeeder
                 },
                 new CabDriver
                 {
+                    GovernmentId = "84958Sdfkjk",
                     Name = "Sunita Desai",
                     Age = 38,
                     Gender = Gender.Female,
@@ -48,6 +52,7 @@ namespace Repositories.DataSeeder
                 },
                 new CabDriver
                 {
+                    GovernmentId = "ASDFFG",
                     Name = "Karan Singh",
                     Age = 45,
                     Gender = Gender.Male,
@@ -56,6 +61,7 @@ namespace Repositories.DataSeeder
                 },
                 new CabDriver
                 {
+                    GovernmentId = "NHKLI",
                     Name = "Neha Kulkarni",
                     Age = 33,
                     Gender = Gender.Female,

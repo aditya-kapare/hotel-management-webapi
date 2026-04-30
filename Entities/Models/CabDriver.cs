@@ -1,20 +1,18 @@
 ﻿using Entities.Enums;
-using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entities.Models
 {
+    [Index(nameof(GovernmentId), Name = "IX_Unique_GovernmentId", IsUnique = true)]
     public class CabDriver
     {
         [Key]
         [Required]
         public int DriverId { get; set; }
-
+        
+        [Required]
+        public string GovernmentId { get; set; }
         [Required]
         public string Name { get; set; } = string.Empty;
 
@@ -25,6 +23,9 @@ namespace Entities.Models
         public string CarVendor { get; set; } = string.Empty;
 
         public string CarType { get; set; } = string.Empty;
+
+        public bool IsActive { get; set; } = true;
+
 
         public ICollection<DropPickRequest> DropPickRequests { get; set; } = new List<DropPickRequest>();
     }

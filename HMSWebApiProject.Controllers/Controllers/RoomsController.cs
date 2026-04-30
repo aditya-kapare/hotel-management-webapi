@@ -33,7 +33,7 @@ namespace HMSWebApiProject.Controllers.Controllers
         }
 
         // GET: api/rooms/by-type/Deluxe
-        [HttpGet("by-type/{roomType}")]
+        [HttpGet("{roomType}")]
         public async Task<IActionResult> GetRoomsByType(RoomType roomType)
         {
             var rooms = await _service.RoomService.GetRoomsByType(roomType, trackChanges: false);

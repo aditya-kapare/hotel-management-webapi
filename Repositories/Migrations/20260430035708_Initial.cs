@@ -17,11 +17,13 @@ namespace Repositories.Migrations
                 {
                     DriverId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    GovernmentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
                     Gender = table.Column<int>(type: "int", nullable: false),
                     CarVendor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CarType = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    CarType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -122,6 +124,12 @@ namespace Repositories.Migrations
                         principalColumn: "StayId",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Unique_GovernmentId",
+                table: "CabDrivers",
+                column: "GovernmentId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DropPickRequests_DriverId",
