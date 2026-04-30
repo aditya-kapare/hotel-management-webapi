@@ -13,7 +13,8 @@ namespace Services.Contracts
         Task<CabDriverDTO> CreateDriver(CabDriverForCreationDTO driver);
 
         Task UpdateDriver(int driverId, CabDriverForUpdateDTO driverForUpdate, bool trackChanges);
-
+        Task UpdateDriver(string driverId, CabDriverForUpdateDTO driverForUpdate, bool trackChanges);
         Task DeleteDriver(int driverId, bool trackChanges);
+        Task DeleteDriver(string driverId, bool trackChanges);
     }
 }

@@ -106,6 +106,7 @@ namespace Services
                 throw new CabDriverNotFoundException(driverId);
 
             driver.IsActive = false;
+            _repository.CabDriver.UpdateDriver(driver);
             _repository.Save();
         }
 
@@ -118,6 +119,7 @@ namespace Services
                 throw new CabDriverNotFoundException(driverId);
 
             driver.IsActive = false;
+            _repository.CabDriver.UpdateDriver(driver);
             _repository.Save();
         }
     }

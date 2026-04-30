@@ -93,23 +93,23 @@ namespace HMSWebApiProject.Controllers.Controllers
             return NoContent();
         }
 
-        // PUT: api/cabdrivers/by-govt-id/XXXX
-        //[HttpPut("by-govt-id/{govtId}")]
-        //public async Task<IActionResult> UpdateDriverByGovtId(
-        //    string govtId,
-        //    [FromBody] CabDriverForUpdateDTO driverForUpdate)
-        //{
-        //    if (driverForUpdate is null)
-        //        return BadRequest("Cab driver update object is null.");
+        //PUT: api/cabdrivers/by-govt-id/XXXX
+        [HttpPut("by-govt-id/{govtId}")]
+        public async Task<IActionResult> UpdateDriverByGovtId(
+            string govtId,
+            [FromBody] CabDriverForUpdateDTO driverForUpdate)
+        {
+            if (driverForUpdate is null)
+                return BadRequest("Cab driver update object is null.");
 
-        //    await _service.CabDriverService.UpdateDriver(
-        //        govtId,
-        //        driverForUpdate,
-        //        trackChanges: true
-        //    );
+            await _service.CabDriverService.UpdateDriver(
+                govtId,
+                driverForUpdate,
+                trackChanges: true
+            );
 
-        //    return NoContent();
-        //}
+            return NoContent();
+        }
 
         // ============================
         // DELETE (soft delete)
@@ -126,13 +126,13 @@ namespace HMSWebApiProject.Controllers.Controllers
         }
 
         // DELETE: api/cabdrivers/by-govt-id/XXXX
-        //[HttpDelete("by-govt-id/{govtId}")]
-        //public async Task<IActionResult> DeleteDriverByGovtId(string govtId)
-        //{
-        //    await _service.CabDriverService
-        //        .DeleteDriver(govtId, trackChanges: false);
+        [HttpDelete("by-govt-id/{govtId}")]
+        public async Task<IActionResult> DeleteDriverByGovtId(string govtId)
+        {
+            await _service.CabDriverService
+                .DeleteDriver(govtId, trackChanges: false);
 
-        //    return NoContent();
-        //}
+            return NoContent();
+        }
     }
 }
