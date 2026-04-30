@@ -9,6 +9,7 @@ namespace Entities.Enums
     public enum AvailabilityStatus
     {
         Available,
-        Occupied
+        Occupied,
+        Inavailable
     }
 }
