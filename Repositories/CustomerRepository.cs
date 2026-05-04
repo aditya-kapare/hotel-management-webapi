@@ -1,18 +1,27 @@
 ﻿using Contracts;
 using Entities.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repositories
 {
-    public class CustomerRepository: RepositoryBase<CabDriver>, ICustomerRepository
+    public class CustomerRepository
+        : RepositoryBase<Customer>, ICustomerRepository
     {
-        public CustomerRepository(RepositoryContext context):base(context)
+        public CustomerRepository(RepositoryContext context)
+            : base(context)
         {
-            
         }
+
+        public IEnumerable<Customer> GetAllCustomers(bool trackChanges) =>
+            FindAll(trackChanges).ToList();
+
+        public Customer? GetCustomer(string identityId, bool trackChanges) =>
+            FindByCondition(c => c.IdentityId == identityId, trackChanges)
+            .SingleOrDefault();
+
+        public void CreateCustomer(Customer customer) =>
+            Create(customer);
+
+        public void DeleteCustomer(Customer customer) =>
+            Delete(customer);
     }
 }

@@ -2,6 +2,7 @@ using Contracts;
 using HMSWebApiProject.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using System.Text.Json.Serialization;
 
 namespace HMSWebApiProject
 {
@@ -18,6 +19,11 @@ namespace HMSWebApiProject
             builder.Services.ConfigureRepositoryManager();
             builder.Services.ConfigureServiceManager();
             builder.Services.ConfigureSqlDbContext(builder.Configuration);
+            builder.Services.AddControllers()
+                             .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
 
             // Add services to the container.

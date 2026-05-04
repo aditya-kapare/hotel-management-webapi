@@ -10,6 +10,12 @@ namespace HMSWebApiProject
             CreateMap<Room, RoomDTO>();
             CreateMap<RoomForCreationDTO, Room>();
             CreateMap<RoomForUpdateDTO, Room>();
+
+            CreateMap<Customer, CustomerDTO>();
+            CreateMap<CustomerForCreationDTO, Customer>();
+            CreateMap<CustomerForUpdateDTO, Customer>();
+
         }
+        
     }
 }
