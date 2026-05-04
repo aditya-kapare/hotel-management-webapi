@@ -11,9 +11,11 @@ namespace HMSWebApiProject
             CreateMap<RoomForCreationDTO, Room>();
             CreateMap<RoomForUpdateDTO, Room>();
 
-            CreateMap<CabDriver, CabDriverDTO>();
-            CreateMap<CabDriverForCreationDTO, CabDriver>();
-            CreateMap<CabDriverForUpdateDTO, CabDriver>();
+            CreateMap<Customer, CustomerDTO>();
+            CreateMap<CustomerForCreationDTO, Customer>();
+            CreateMap<CustomerForUpdateDTO, Customer>();
+
         }
+        
     }
 }
