@@ -34,6 +34,9 @@ namespace HMSWebApiProject
                         new JsonStringEnumConverter());
                 });
 
+
+
+
             builder.Services.AddAutoMapper(cfg => { cfg.LicenseKey = " "; }, typeof(Program).Assembly);
 
             //****************************************************************************************************************
@@ -76,4 +79,3 @@ namespace HMSWebApiProject
         }
     }
 }
-        
