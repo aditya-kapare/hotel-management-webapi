@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DTOs.DataTransferObjects;
+using DTOs.Stay;
 using Entities.Models;
 
 namespace HMSWebApiProject
@@ -11,9 +12,16 @@ namespace HMSWebApiProject
             CreateMap<RoomForCreationDTO, Room>();
             CreateMap<RoomForUpdateDTO, Room>();
 
-            CreateMap<CabDriver, CabDriverDTO>();
-            CreateMap<CabDriverForCreationDTO, CabDriver>();
-            CreateMap<CabDriverForUpdateDTO, CabDriver>();
+            CreateMap<Customer, CustomerDTO>();
+            CreateMap<CustomerForCreationDTO, Customer>();
+            CreateMap<CustomerForUpdateDTO, Customer>();
+
+
+            CreateMap<Stay, StayDTO>();
+            CreateMap<StayForCreationDTO, Stay>();
+            CreateMap<StayForUpdateDTO, Stay>();
+
         }
+
     }
 }
