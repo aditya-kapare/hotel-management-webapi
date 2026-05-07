@@ -21,9 +21,13 @@ namespace Repositories
             => await FindByCondition(r => r.DriverId == id, trackChanges)
                         .SingleOrDefaultAsync();
 
+
         public async Task<CabDriver?> GetCabDriverByGovtIdAsync(string govtId, bool trackChanges)
-            => await FindByCondition(r => r.GovernmentId.Equals(govtId), trackChanges)
-                        .SingleOrDefaultAsync();
+            => await FindByCondition(
+                r => r.GovernmentId.ToLower() == govtId.ToLower(),
+                trackChanges
+            ).SingleOrDefaultAsync();
+
 
         public void CreateDriver(CabDriver cabDriver) => Create(cabDriver);
 

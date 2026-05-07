@@ -1,4 +1,6 @@
 ﻿
+using DTOs.DataTransferObjects;
+
 namespace DTOs.Stay
 {
     public record StayDTO(
@@ -9,7 +11,8 @@ namespace DTOs.Stay
         DateTime? CheckOutAt,
         decimal DepositPaid,
         decimal AmountPaid,
-        decimal PendingAmount
+        decimal PendingAmount,
+        CustomerBriefDTO Customer
     );
 }
 

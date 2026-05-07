@@ -64,6 +64,15 @@ public class StayRepository : RepositoryBase<Stay>, IStayRepository
             .ToListAsync();
     }
 
+
+    public async Task<bool> HasActiveStayAsync(int roomNo)
+    {
+        return await FindByCondition(
+            s => s.RoomNo == roomNo && s.CheckOutAt == null,
+            trackChanges: false)
+            .AnyAsync();
+    }
+
     // ---------- CREATE ----------
     public void CreateStay(Stay stay) => Create(stay);
 

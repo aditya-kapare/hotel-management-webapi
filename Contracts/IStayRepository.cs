@@ -16,6 +16,7 @@ namespace Contracts
         Task<IEnumerable<Stay>> GetByCustomerIdentityIdAsync(string customerIdentityId, bool trackChanges);
         Task<IEnumerable<Stay>> GetByCheckInDateAsync(DateTime date, bool trackChanges);
 
+        Task<bool> HasActiveStayAsync(int roomNo);
         void CreateStay(Stay stay);
         void UpdateStay(Stay stay);
         void DeleteStay(Stay stay);

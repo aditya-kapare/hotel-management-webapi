@@ -16,10 +16,20 @@ namespace HMSWebApiProject
             CreateMap<CustomerForCreationDTO, Customer>();
             CreateMap<CustomerForUpdateDTO, Customer>();
 
+            CreateMap<Customer, CustomerBriefDTO>();
 
-            CreateMap<Stay, StayDTO>();
+            CreateMap<Stay, StayDTO>()
+                .ForMember(dest => dest.Customer,
+                    opt => opt.MapFrom(src => src.Customer));
+
+
+           
             CreateMap<StayForCreationDTO, Stay>();
             CreateMap<StayForUpdateDTO, Stay>();
+
+            CreateMap<CabDriver, CabDriverDTO>();
+            CreateMap<CabDriverForCreationDTO, CabDriver>();
+            CreateMap<CabDriverForUpdateDTO, CabDriver>();
 
         }
 
