@@ -20,10 +20,11 @@ namespace HMSWebApiProject
             builder.Services.ConfigureServiceManager();
             builder.Services.ConfigureSqlDbContext(builder.Configuration);
             builder.Services.AddControllers()
-                             .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
+     .AddJsonOptions(options =>
+     {
+         // ? REMOVE string-enum conversion
+         options.JsonSerializerOptions.Converters.Clear();
+     });
 
 
             // Add services to the container.
