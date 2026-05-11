@@ -3,10 +3,10 @@
 namespace DTOs.DataTransferObjects
 {
     public record RoomForUpdateDTO(
-        RoomType RoomType,
-        AcOption AcOption,
-        AvailabilityStatus AvailabilityStatus,
-        CleanStatus CleanStatus,
+        int RoomType,
+        int AcOption,
+        int AvailabilityStatus,
+        int CleanStatus,
         decimal Price
     );
 }

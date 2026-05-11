@@ -8,7 +8,7 @@ namespace DTOs.DataTransferObjects
         string GovernmentId,
         string Name,
         int Age,
-        Gender Gender,
+        int Gender,
         string CarVendor,
         string CarType
     );
