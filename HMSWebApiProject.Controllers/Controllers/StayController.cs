@@ -1,4 +1,5 @@
-﻿using DTOs.Stay;
+﻿using DTOs.DataTransferObjects;
+using DTOs.Stay;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 
@@ -100,9 +101,14 @@ namespace HMSWebApiProject.Controllers
         [HttpPut("{stayId:int}")]
         public async Task<IActionResult> UpdateStay(int stayId,[FromBody] StayForUpdateDTO dto)
         {
+           
             await _stayService.UpdateAsync(stayId,dto);
             return NoContent();
         }
+
+
+
+      
 
         // 8️⃣ Delete Stay by Stay ID
         // DELETE /api/stays/{stayId:int}
@@ -112,5 +118,42 @@ namespace HMSWebApiProject.Controllers
             await _stayService.DeleteAsync(stayId);
             return NoContent();
         }
+
+        // 9️⃣ View Active Stays
+        // GET /api/stays/active
+        [HttpGet("active")]
+        public async Task<IActionResult> GetActive()
+        {
+            return Ok(await _stayService.GetActiveAsync());
+        }
+        
+        // 10️⃣ View Past Stays
+        // GET /api/stays/past
+        [HttpGet("past")]
+        public async Task<IActionResult> GetPast()
+        {
+            return Ok(await _stayService.GetPastAsync());
+        }
+
+
+        // 11️⃣ Check-out a Stay
+        // POST /api/stays/{stayId:int}/checkout
+        [HttpPost("{stayId:int}/checkout")]
+        public async Task<IActionResult> CheckOut(
+            int stayId,
+            [FromBody] CheckOutRequestDTO dto)
+        {
+            return Ok(await _stayService.CheckOutAsync(stayId, dto));
+        }
+
+        // 12️⃣ Get Billing Summary for a Stay
+        // GET /api/stays/{stayId:int}/billing
+        [HttpGet("{stayId:int}/billing")]
+        public async Task<IActionResult> GetBilling(int stayId)
+        {
+            return Ok(await _stayService.GetBillingSummaryAsync(stayId));
+        }
+
+
     }
 }

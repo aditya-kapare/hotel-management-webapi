@@ -37,6 +37,7 @@ namespace HMSWebApiProject.Extensions
         {
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddScoped<IStayService, StayService>();
+            services.AddScoped<IDropPickRequestService, DropPickRequestService>();
         }
 
         public static void ConfigureSqlDbContext(this IServiceCollection services, IConfiguration configuration)
