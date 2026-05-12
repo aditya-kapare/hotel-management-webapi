@@ -23,6 +23,7 @@ namespace HMSWebApiProject.Extensions
                         {
                             NotFoundException => StatusCodes.Status404NotFound,
                             AlreadyExistsException => StatusCodes.Status409Conflict,
+                            BadRequestException => StatusCodes.Status400BadRequest,
                             _ => StatusCodes.Status500InternalServerError
                         };
 
