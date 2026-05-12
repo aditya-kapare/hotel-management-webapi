@@ -1,5 +1,7 @@
 ﻿using DTOs.DataTransferObjects;
 using Entities.Enums;
+using Entities.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Contracts;
 
@@ -47,14 +49,27 @@ namespace HMSWebApiProject.Controllers.Controllers
             if (roomForCreation is null)
                 return BadRequest("Room object is null.");
 
-            var createdRoom = await _service.RoomService.CreateRoom(roomForCreation);
+            try
+            {
+                var createdRoom = await _service.RoomService.CreateRoom(roomForCreation);
 
-            return CreatedAtRoute(
-                "RoomByRoomNo",
-                new { roomNo = createdRoom.RoomNo },
-                createdRoom
-            );
+                return CreatedAtRoute(
+                    "RoomByRoomNo",
+                    new { roomNo = createdRoom.RoomNo },
+                    createdRoom
+                );
+            }
+            catch (RoomAlreadyExistsException ex)
+            {
+                // ✅ Convert domain exception → HTTP response
+                return Conflict(new
+                {
+                    StatusCode = StatusCodes.Status409Conflict,
+                    Message = ex.Message
+                });
+            }
         }
+
 
         // PUT: api/rooms/101
         [HttpPut("{roomNo:int}")]
