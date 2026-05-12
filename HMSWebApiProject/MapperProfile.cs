@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DTOs.DataTransferObjects;
+using DTOs.DropPickRequest;
 using DTOs.Stay;
 using Entities.Models;
 
@@ -30,6 +31,10 @@ namespace HMSWebApiProject
             CreateMap<CabDriver, CabDriverDTO>();
             CreateMap<CabDriverForCreationDTO, CabDriver>();
             CreateMap<CabDriverForUpdateDTO, CabDriver>();
+
+            CreateMap<DropPickRequest, DropPickRequestDTO>();
+            CreateMap<DropPickRequestForCreationDTO, DropPickRequest>();
+            CreateMap<DropPickRequestForUpdateDTO, DropPickRequest>();
 
         }
 
