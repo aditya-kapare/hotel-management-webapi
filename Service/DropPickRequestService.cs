@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using DTOs.DataTransferObjects;
 using DTOs.DropPickRequest;
 using Entities.Enums;
 using Entities.Exceptions;
@@ -29,61 +30,73 @@ namespace Services
 
 
 
-            // ---------------- READ OPERATIONS ----------------
+        // ---------------- READ OPERATIONS ----------------
 
-            public async Task<IEnumerable<DropPickRequestDTO>> GetAllAsync()
-            {
-                var requests = await repository.DropPickRequest.GetAllAsync(trackChanges: false);
-                return mapper.Map<IEnumerable<DropPickRequestDTO>>(requests);
-            }
+        public async Task<IEnumerable<DropPickRequestDTO>> GetAllAsync()
+        {
+            var requests = await repository.DropPickRequest.GetAllAsync(trackChanges: false);
+            return mapper.Map<IEnumerable<DropPickRequestDTO>>(requests);
+        }
 
-            public async Task<DropPickRequestDTO?> GetByIdAsync(int requestId)
-            {
-                var request = await repository.DropPickRequest.GetByIdAsync(requestId, trackChanges: false);
-                return request == null ? null : mapper.Map<DropPickRequestDTO>(request);
-            }
+        public async Task<DropPickRequestDTO?> GetByIdAsync(int requestId)
+        {
+            var request = await repository.DropPickRequest.GetByIdAsync(requestId, trackChanges: false);
+            return request == null ? null : mapper.Map<DropPickRequestDTO>(request);
+        }
 
-            public async Task<IEnumerable<DropPickRequestDTO>> GetByStayIdAsync(int stayId)
-            {
-                var requests = await repository.DropPickRequest.GetByStayIdAsync(stayId, trackChanges: false);
-                return mapper.Map<IEnumerable<DropPickRequestDTO>>(requests);
-            }
+        public async Task<IEnumerable<DropPickRequestDTO>> GetByStayIdAsync(int stayId)
+        {
+            var requests = await repository.DropPickRequest.GetByStayIdAsync(stayId, trackChanges: false);
+            return mapper.Map<IEnumerable<DropPickRequestDTO>>(requests);
+        }
 
-            public async Task<IEnumerable<DropPickRequestDTO>> GetByDriverIdAsync(int driverId)
-            {
-                var requests = await repository.DropPickRequest.GetByDriverIdAsync(driverId, trackChanges: false);
-                return mapper.Map<IEnumerable<DropPickRequestDTO>>(requests);
-            }
+        public async Task<IEnumerable<DropPickRequestDTO>> GetByDriverIdAsync(int driverId)
+        {
+            var requests = await repository.DropPickRequest.GetByDriverIdAsync(driverId, trackChanges: false);
+            return mapper.Map<IEnumerable<DropPickRequestDTO>>(requests);
+        }
 
-            public async Task<IEnumerable<int>> GetAvailableDriverIdsAsync()
-            {
-                var drivers = await repository.DropPickRequest.GetAvailableDriversAsync();
-                return drivers.Select(d => d.DriverId);
-            }
 
-            // ---------------- CREATE ----------------
+        public async Task<IReadOnlyList<CabDriverBriefDTO>> GetAvailableDriversAsync()
+        {
+            var drivers =
+                await repository.DropPickRequest.GetAvailableDriversAsync();
 
-            public async Task<DropPickRequestDTO> CreateAsync(DropPickRequestForCreationDTO dto)
-            {
-                // ✅ Map DTO → Entity
-                var request = mapper.Map<DropPickRequest>(dto);
+            return drivers
+                .Where(d => d.IsActive) // optional safety check
+                .Select(d => new CabDriverBriefDTO(d.DriverId, d.Name))
+                .ToList();
+        }
 
-                // ✅ Business Rule: set requested time
-                request.RequestedAt = DateTime.Now;
 
-                // ✅ Business Rule: default status
-                request.Status = DropPickStatus.Assigned;
+        // ---------------- CREATE ----------------
 
-                // ✅ Business Rule: check if driver is busy
-                var busyDrivers = await repository.DropPickRequest.GetAvailableDriversAsync();
-                if (!busyDrivers.Any(d => d.DriverId == request.DriverId))
-                    throw new CabDriverBusyException(request.DriverId);
+        public async Task<DropPickRequestDTO> CreateAsync(DropPickRequestForCreationDTO dto)
+        {
+            // ✅ Map DTO → Entity
+            var request = mapper.Map<DropPickRequest>(dto);
 
-                repository.DropPickRequest.Create(request);
-                repository.Save();
+            // ✅ Business Rule: set requested time
+            request.RequestedAt = DateTime.Now;
 
-                return mapper.Map<DropPickRequestDTO>(request);
-            }
+            // ✅ Business Rule: default status
+            request.Status = DropPickStatus.Assigned;
+
+            // ✅ Business Rule: check if driver is busy
+
+
+            var availableDrivers =
+                await repository.DropPickRequest.GetAvailableDriversAsync();
+
+            if (!availableDrivers.Any(d => d.DriverId == request.DriverId))
+                throw new CabDriverBusyException(request.DriverId);
+
+
+            repository.DropPickRequest.Create(request);
+            repository.Save();
+
+            return mapper.Map<DropPickRequestDTO>(request);
+        }
 
         // ---------------- UPDATE ----------------
         public async Task UpdateAsync(int requestId, DropPickRequestForUpdateDTO dto)
@@ -112,7 +125,7 @@ namespace Services
             if (dto.RequestType.HasValue &&
                 request.Status == DropPickStatus.Assigned)
             {
-                request.RequestType = dto.RequestType.Value;
+                request.RequestType = (RequestType)dto.RequestType.Value;
             }
 
             // ✅ Driver reassignment (only before InProgress)
@@ -130,13 +143,12 @@ namespace Services
 
             // ✅ Status transition
             if (dto.Status.HasValue &&
-                dto.Status.Value != request.Status)
+                dto.Status.Value != (int)request.Status)
             {
-                if (!IsValidStatusTransition(request.Status, dto.Status.Value))
+                if (!IsValidStatusTransition(request.Status, (DropPickStatus)dto.Status.Value))
                     throw new InvalidDropPickStatusTransitionException(
-                        request.Status, dto.Status.Value);
-
-                request.Status = dto.Status.Value;
+                        request.Status, (DropPickStatus)dto.Status.Value);
+                request.Status = (DropPickStatus)dto.Status.Value;
             }
 
             repository.DropPickRequest.Update(request);
@@ -146,36 +158,39 @@ namespace Services
         // ---------------- DELETE ----------------
 
         public async Task DeleteAsync(int requestId)
+        {
+            var request = await repository.DropPickRequest.GetByIdAsync(requestId, trackChanges: true);
+            if (request == null)
+                throw new DropPickRequestNotFoundException(requestId);
+
+
+            request.Status = DropPickStatus.Cancelled;
+            repository.DropPickRequest.Update(request);
+            repository.Save();
+
+        }
+
+        // ---------------- PRIVATE HELPERS ----------------
+
+        private static bool IsValidStatusTransition(
+            DropPickStatus current,
+            DropPickStatus next)
+        {
+            return current switch
             {
-                var request = await repository.DropPickRequest.GetByIdAsync(requestId, trackChanges: true);
-                if (request == null)
-                    throw new DropPickRequestNotFoundException(requestId);
+                DropPickStatus.Assigned =>
+                    next == DropPickStatus.InProgress ||
+                    next == DropPickStatus.Cancelled,
 
-                repository.DropPickRequest.Delete(request);
-                repository.Save();
-            }
+                DropPickStatus.InProgress =>
+                    next == DropPickStatus.Completed ||
+                    next == DropPickStatus.Cancelled,
 
-            // ---------------- PRIVATE HELPERS ----------------
+                DropPickStatus.Completed => false,
+                DropPickStatus.Cancelled => false,
 
-            private static bool IsValidStatusTransition(
-                DropPickStatus current,
-                DropPickStatus next)
-            {
-                return current switch
-                {
-                    DropPickStatus.Assigned =>
-                        next == DropPickStatus.InProgress ||
-                        next == DropPickStatus.Cancelled,
-
-                    DropPickStatus.InProgress =>
-                        next == DropPickStatus.Completed ||
-                        next == DropPickStatus.Cancelled,
-
-                    DropPickStatus.Completed => false,
-                    DropPickStatus.Cancelled => false,
-
-                    _ => false
-                };
-            }
+                _ => false
+            };
         }
     }
+}

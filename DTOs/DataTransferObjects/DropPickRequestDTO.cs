@@ -10,13 +10,21 @@ namespace DTOs.DropPickRequest
 {
 
     public record DropPickRequestDTO(
-           int RequestId,
-           int StayId,
-           int DriverId,
-           RequestType RequestType,
-           DropPickStatus Status,
-           DateTime RequestedAt,
-           string Notes
+
+    int RequestId,
+    int StayId,
+    int DriverId,
+    int RequestType,
+    int Status,
+    DateTime RequestedAt,
+    string Notes,
+    int RoomNo,
+    string CustomerName,
+    string CustomerPhone,
+    string DriverName,
+    bool CanEdit
+
+
        );
 
 }

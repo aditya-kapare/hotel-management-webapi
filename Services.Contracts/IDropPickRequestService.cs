@@ -1,4 +1,5 @@
 ﻿using DTOs.DropPickRequest;
+using DTOs.DataTransferObjects;
 
 namespace Services.Contracts
 {
@@ -8,7 +9,7 @@ namespace Services.Contracts
     Task<DropPickRequestDTO?> GetByIdAsync(int requestId);
     Task<IEnumerable<DropPickRequestDTO>> GetByStayIdAsync(int stayId);
     Task<IEnumerable<DropPickRequestDTO>> GetByDriverIdAsync(int driverId);
-    Task<IEnumerable<int>> GetAvailableDriverIdsAsync();
+    Task<IReadOnlyList<CabDriverBriefDTO>> GetAvailableDriversAsync();
 
     Task<DropPickRequestDTO> CreateAsync(DropPickRequestForCreationDTO dto);
     Task UpdateAsync(int requestId, DropPickRequestForUpdateDTO dto);

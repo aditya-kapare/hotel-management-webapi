@@ -26,5 +26,10 @@ namespace Entities.Models
         public CabDriver CabDriver { get; set; } = null!;
 
         public DropPickStatus Status { get; set; }
+
+
+
+
+
     }
 }

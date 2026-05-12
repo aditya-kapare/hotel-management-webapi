@@ -55,22 +55,23 @@ namespace Repositories
                     .ToListAsync();
             }
 
-            public async Task<IEnumerable<CabDriver>> GetAvailableDriversAsync()
-            {
-                var busyDriverIds = await context.DropPickRequests
-                    .Where(r => r.Status != DropPickStatus.Completed &&
-                                r.Status != DropPickStatus.Cancelled)
-                    .Select(r => r.DriverId)
-                    .Distinct()
-                    .ToListAsync();
 
-                return await context.CabDrivers
-                    .Where(d => !busyDriverIds.Contains(d.DriverId))
-                    .AsNoTracking()
-                    .ToListAsync();
-            }
+        public async Task<IEnumerable<CabDriver>> GetAvailableDriversAsync()
+        {
+            var busyDriverIds = await context.DropPickRequests
+                .Where(r => r.Status == DropPickStatus.InProgress)
+                .Select(r => r.DriverId)
+                .Distinct()
+                .ToListAsync();
 
-            public void Create(DropPickRequest request) => base.Create(request);
+            return await context.CabDrivers
+                .Where(d => !busyDriverIds.Contains(d.DriverId))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+
+        public void Create(DropPickRequest request) => base.Create(request);
             public void Update(DropPickRequest request) => base.Update(request);
             public void Delete(DropPickRequest request) => base.Delete(request);
         }

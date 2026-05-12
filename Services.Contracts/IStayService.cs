@@ -27,6 +27,8 @@ namespace Services.Contracts
         // -------- WRITE --------
         Task<StayDTO> CreateAsync(StayForCreationDTO dto);
         Task UpdateAsync(int stayId, StayForUpdateDTO dto);
+
+        Task<StayDTO> UpdateAndReturnAsync(int stayId, StayForUpdateDTO dto);
         Task DeleteAsync(int stayId);
 
     }

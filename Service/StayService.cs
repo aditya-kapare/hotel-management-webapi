@@ -96,6 +96,15 @@ namespace Services
 
         // ================= UPDATE (CHECK-OUT) =================
 
+
+        public async Task<StayDTO> UpdateAndReturnAsync(int stayId, StayForUpdateDTO dto)
+        {
+            await UpdateAsync(stayId, dto);
+            var stay = await repository.Stay.GetByIdAsync(stayId, false);
+            return mapper.Map<StayDTO>(stay);
+        }
+
+
         public async Task UpdateAsync(int stayId, StayForUpdateDTO dto)
         {
             if (stayId <= 0)

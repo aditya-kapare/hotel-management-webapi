@@ -9,9 +9,10 @@ namespace DTOs.DropPickRequest
 {
 
     public record DropPickRequestForCreationDTO(
+        DateTime? RequestedAt,
            int StayId,
            int DriverId,
-           RequestType RequestType,
+           int RequestType,
            string Notes
        );
 

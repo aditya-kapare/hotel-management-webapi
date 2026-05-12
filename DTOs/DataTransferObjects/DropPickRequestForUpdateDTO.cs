@@ -9,8 +9,8 @@ namespace DTOs.DropPickRequest
 
         // Editable fields (same intent as Web App)
         DateTime? RequestedAt,
-        RequestType? RequestType,
-        DropPickStatus? Status,
+        int? RequestType,
+        int? Status,
         int? DriverId,
         string? Notes
     );

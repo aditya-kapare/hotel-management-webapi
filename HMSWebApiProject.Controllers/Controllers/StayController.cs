@@ -98,17 +98,20 @@ namespace HMSWebApiProject.Controllers
 
         // 7️⃣ Update Stay Details (Check-out)
         // PUT /api/stays
+
         [HttpPut("{stayId:int}")]
-        public async Task<IActionResult> UpdateStay(int stayId,[FromBody] StayForUpdateDTO dto)
+        public async Task<IActionResult> UpdateStay(
+            int stayId,
+            [FromBody] StayForUpdateDTO dto)
         {
-           
-            await _stayService.UpdateAsync(stayId,dto);
-            return NoContent();
+            var updatedStay = await _stayService.UpdateAndReturnAsync(stayId, dto);
+            return Ok(updatedStay);
         }
 
 
 
-      
+
+
 
         // 8️⃣ Delete Stay by Stay ID
         // DELETE /api/stays/{stayId:int}

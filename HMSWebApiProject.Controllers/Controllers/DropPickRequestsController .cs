@@ -56,12 +56,14 @@ namespace HMSWebApiProject.Controllers
 
         // 5️⃣ View available cab drivers for drop-pick
         // GET /api/droppickrequests/drivers/available
+
         [HttpGet("drivers/available")]
         public async Task<IActionResult> GetAvailableDrivers()
         {
-            var driverIds = await _service.GetAvailableDriverIdsAsync();
-            return Ok(driverIds);
+            var drivers = await _service.GetAvailableDriversAsync();
+            return Ok(drivers);
         }
+
 
         // 6️⃣ Create a new drop-pick request
         // POST /api/droppickrequests
