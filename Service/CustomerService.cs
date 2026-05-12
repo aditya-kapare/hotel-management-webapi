@@ -40,6 +40,12 @@ namespace Services
 
         public CustomerDTO CreateCustomer(CustomerForCreationDTO customer)
         {
+            var existingCustomer =
+                _repository.Customer.GetCustomer(customer.IdentityId, trackChanges: false);
+
+            if (existingCustomer != null)
+                throw new CustomerAlreadyExistsException(customer.IdentityId);
+
             var customerEntity = _mapper.Map<Customer>(customer);
             _repository.Customer.CreateCustomer(customerEntity);
             _repository.Save();
