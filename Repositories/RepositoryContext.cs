@@ -42,6 +42,7 @@ namespace Repositories
                         .HasOne(s => s.Room)
                         .WithMany(r => r.Stays)
                         .HasForeignKey(s => s.RoomNo)
+                        .HasPrincipalKey(r => r.RoomNo)
                         .OnDelete(DeleteBehavior.Restrict);
 
             // Configure stay to customer relationship
@@ -56,6 +57,7 @@ namespace Repositories
                         .HasOne(d => d.Stay)
                         .WithMany(s => s.DropPickRequests)
                         .HasForeignKey(d => d.StayId)
+                        
                         .OnDelete(DeleteBehavior.Cascade);
 
             // Configure drop-pick request to cab driver relationship

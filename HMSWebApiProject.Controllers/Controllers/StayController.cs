@@ -67,7 +67,7 @@ namespace HMSWebApiProject.Controllers
                 stay.StayId,
                 stay.Customer,
 
-                
+
             });
         }
 
@@ -129,7 +129,7 @@ namespace HMSWebApiProject.Controllers
         {
             return Ok(await _stayService.GetActiveAsync());
         }
-        
+
         // 10️⃣ View Past Stays
         // GET /api/stays/past
         [HttpGet("past")]
@@ -156,6 +156,8 @@ namespace HMSWebApiProject.Controllers
         {
             return Ok(await _stayService.GetBillingSummaryAsync(stayId));
         }
+
+
 
 
     }

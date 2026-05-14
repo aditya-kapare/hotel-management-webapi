@@ -9,6 +9,7 @@ namespace DTOs.Stay
         string CustomerIdentityId,
         DateTime CheckInAt,
         DateTime? CheckOutAt,
+        decimal RoomPrice,
         decimal DepositPaid,
         decimal AmountPaid,
         decimal PendingAmount,

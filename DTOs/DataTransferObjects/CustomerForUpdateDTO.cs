@@ -6,7 +6,7 @@ namespace DTOs.DataTransferObjects
     (
         string MobileNo,
         string Name,
-        Gender Gender,
+        int Gender,
         string Address,
         string Country
     );

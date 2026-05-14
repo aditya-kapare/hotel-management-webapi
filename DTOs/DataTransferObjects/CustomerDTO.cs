@@ -5,10 +5,10 @@ namespace DTOs.DataTransferObjects
     public record CustomerDTO
     (
         string IdentityId,
-        IdentityIdType IdentityIdType,
+        int IdentityIdType,
         string MobileNo,
         string Name,
-        Gender Gender,
+        int Gender,
         string Address,
         string Country
     );

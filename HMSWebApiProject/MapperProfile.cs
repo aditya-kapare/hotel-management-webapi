@@ -20,17 +20,20 @@ namespace HMSWebApiProject
             CreateMap<CustomerForUpdateDTO, Customer>();
 
             CreateMap<Customer, CustomerBriefDTO>();
-
             CreateMap<Stay, StayDTO>()
-       .ForCtorParam("Customer", opt => opt.MapFrom(src =>
-           src.Customer == null
-               ? null
-               : new CustomerBriefDTO(
-                   src.Customer.IdentityId,
-                   src.Customer.Name,
-                   src.Customer.MobileNo
-               )
-       ));
+                .ForCtorParam("RoomPrice",
+                    opt => opt.MapFrom(src => src.Room.Price))
+
+                .ForCtorParam("Customer",
+                    opt => opt.MapFrom(src =>
+                        src.Customer == null
+                            ? null
+                            : new CustomerBriefDTO(
+                                src.Customer.IdentityId,
+                                src.Customer.Name,
+                                src.Customer.MobileNo
+                            )
+                    ));
 
 
 

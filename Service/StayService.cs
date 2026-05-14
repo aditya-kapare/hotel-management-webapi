@@ -6,11 +6,6 @@ using Entities.Enums;
 using Entities.Exceptions;
 using Entities.Models;
 using Services.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services
 {
@@ -26,73 +21,73 @@ namespace Services
             this.logger = loggerManager;
             this.mapper = mapper;
         }
-            // ================= READ =================
+        // ================= READ =================
 
-            public async Task<IEnumerable<StayDTO>> GetAllAsync()
-            {
-                var stays = await repository.Stay.GetAllAsync(trackChanges: false);
-                return mapper.Map<IEnumerable<StayDTO>>(stays);
-            }
+        public async Task<IEnumerable<StayDTO>> GetAllAsync()
+        {
+            var stays = await repository.Stay.GetAllAsync(trackChanges: false);
+            return mapper.Map<IEnumerable<StayDTO>>(stays);
+        }
 
-            public async Task<StayDTO?> GetByIdAsync(int stayId)
-            {
-                var stay = await repository.Stay.GetByIdAsync(stayId, trackChanges: false);
-                return stay == null ? null : mapper.Map<StayDTO>(stay);
-            }
+        public async Task<StayDTO?> GetByIdAsync(int stayId)
+        {
+            var stay = await repository.Stay.GetByIdAsync(stayId, trackChanges: false);
+            return stay == null ? null : mapper.Map<StayDTO>(stay);
+        }
 
-            public async Task<IEnumerable<StayDTO>> GetByRoomNoAsync(int roomNo)
-            {
-                var stays = await repository.Stay.GetByRoomNoAsync(roomNo, trackChanges: false);
-                return mapper.Map<IEnumerable<StayDTO>>(stays);
-            }
+        public async Task<IEnumerable<StayDTO>> GetByRoomNoAsync(int roomNo)
+        {
+            var stays = await repository.Stay.GetByRoomNoAsync(roomNo, trackChanges: false);
+            return mapper.Map<IEnumerable<StayDTO>>(stays);
+        }
 
-            public async Task<IEnumerable<StayDTO>> GetByCustomerIdentityIdAsync(string customerIdentityId)
-            {
-                var stays = await repository.Stay
-                    .GetByCustomerIdentityIdAsync(customerIdentityId, trackChanges: false);
+        public async Task<IEnumerable<StayDTO>> GetByCustomerIdentityIdAsync(string customerIdentityId)
+        {
+            var stays = await repository.Stay
+                .GetByCustomerIdentityIdAsync(customerIdentityId, trackChanges: false);
 
-                return mapper.Map<IEnumerable<StayDTO>>(stays);
-            }
+            return mapper.Map<IEnumerable<StayDTO>>(stays);
+        }
 
-            public async Task<IEnumerable<StayDTO>> GetByCheckInDateAsync(DateTime date)
-            {
-                var stays = await repository.Stay
-                    .GetByCheckInDateAsync(date, trackChanges: false);
+        public async Task<IEnumerable<StayDTO>> GetByCheckInDateAsync(DateTime date)
+        {
+            var stays = await repository.Stay
+                .GetByCheckInDateAsync(date, trackChanges: false);
 
-                return mapper.Map<IEnumerable<StayDTO>>(stays);
-            }
+            return mapper.Map<IEnumerable<StayDTO>>(stays);
+        }
 
         // ================= CREATE =================
+   
+
         public async Task<StayDTO> CreateAsync(StayForCreationDTO dto)
         {
-            // Prevent double booking
             var existingStays = await repository.Stay.GetByRoomNoAsync(dto.RoomNo, false);
             if (existingStays.Any(s => s.CheckOutAt == null))
                 throw new StayAlreadyExistsException(dto.RoomNo);
 
-            var room = await repository.Room.GetRoomByRoomNoAsync(dto.RoomNo, false);
-            if (room == null)
-                throw new RoomNotFoundException(dto.RoomNo);
+            var room = await repository.Room.GetRoomByRoomNoAsync(dto.RoomNo, false)
+                ?? throw new RoomNotFoundException(dto.RoomNo);
 
             var stay = mapper.Map<Stay>(dto);
 
+            stay.RoomNo = dto.RoomNo;
+           
             stay.CheckInAt = DateTime.Now;
-
-            // ✅ IMPORTANT: checkout NOT allowed during creation
             stay.CheckOutAt = null;
 
-            stay.AmountPaid = dto.DepositPaid;
+            stay.DepositPaid = dto.DepositPaid;
+            stay.AmountPaid = 0;
 
-            stay.PendingAmount = room.Price - stay.AmountPaid;
-            if (stay.PendingAmount < 0)
-                stay.PendingAmount = 0;
+            stay.PendingAmount = Math.Max(0, room.Price - stay.DepositPaid);
 
             repository.Stay.CreateStay(stay);
             repository.Save();
 
-            return mapper.Map<StayDTO>(stay);
+            var createdStay = await repository.Stay
+              .GetByIdAsync(stay.StayId, false);
+            return mapper.Map<StayDTO>(createdStay);
         }
-
 
         // ================= UPDATE (CHECK-OUT) =================
 
@@ -150,28 +145,38 @@ namespace Services
             }
 
             // ✅ Incremental payment
-            if (dto.AmountPaid.HasValue && dto.AmountPaid.Value > 0)
+
+            if (dto.AmountPaid.HasValue)
             {
-                stay.AmountPaid += dto.AmountPaid.Value;
+                if (dto.AmountPaid.Value < 0)
+                    throw new InvalidStayOperationException("Amount paid cannot be negative.");
+
+                stay.AmountPaid = dto.AmountPaid.Value;
             }
+
 
             // ✅ BILLING LOGIC — ONLY ON CHECKOUT
             if (dto.CheckOutAt.HasValue)
             {
-                var room = stay.Room
-                    ?? throw new RoomNotFoundException(stay.RoomNo);
+                //var room = stay.Room
+                //    ?? throw new RoomNotFoundException(stay.RoomNo);
 
                 var checkoutAt = dto.CheckOutAt.Value;
 
-                var nights = (int)Math.Ceiling(
-                    (checkoutAt - stay.CheckInAt).TotalDays);
+                //var nights = (int)Math.Ceiling(
+                //    (checkoutAt - stay.CheckInAt).TotalDays);
 
-                nights = Math.Max(1, nights);
+                //nights = Math.Max(1, nights);
 
-                var totalCharge = nights * room.Price;
-                var totalPaid = stay.DepositPaid + stay.AmountPaid;
+                //var totalCharge = nights * room.Price;
+                //var totalPaid = stay.DepositPaid + stay.AmountPaid;
 
-                stay.PendingAmount = Math.Max(0, totalCharge - totalPaid);
+
+                if (dto.DepositPaid.HasValue || dto.AmountPaid.HasValue)
+                {
+                    stay.PendingAmount = RecalculatePendingAmount(stay);
+                }
+
                 stay.CheckOutAt = checkoutAt;
             }
 
@@ -183,14 +188,14 @@ namespace Services
         // ================= DELETE =================
 
         public async Task DeleteAsync(int stayId)
-            {
-                var stay = await repository.Stay.GetByIdAsync(stayId, trackChanges: true);
-                if (stay == null)
-                    throw new StayNotFoundException(stayId);
+        {
+            var stay = await repository.Stay.GetByIdAsync(stayId, trackChanges: true);
+            if (stay == null)
+                throw new StayNotFoundException(stayId);
 
-                repository.Stay.DeleteStay(stay);
-                repository.Save();
-            }
+            repository.Stay.DeleteStay(stay);
+            repository.Save();
+        }
 
 
         public async Task<IEnumerable<StayDTO>> GetActiveAsync()
@@ -270,6 +275,25 @@ namespace Services
             );
         }
 
+        private decimal RecalculatePendingAmount(Stay stay)
+        {
+            var room = stay.Room
+                ?? throw new RoomNotFoundException(stay.RoomNo);
+
+            var effectiveCheckout = stay.CheckOutAt ?? DateTime.Now;
+
+            var nights = (int)Math.Ceiling(
+                (effectiveCheckout - stay.CheckInAt).TotalDays);
+
+            nights = Math.Max(1, nights);
+
+            var totalCharge = nights * room.Price;
+            var totalPaid = stay.DepositPaid + stay.AmountPaid;
+
+            return Math.Max(0, totalCharge - totalPaid);
+        }
+
+
 
     }
 
@@ -277,6 +301,66 @@ namespace Services
 
 }
 
-   
 
 
+
+//public async Task<StayDTO> CreateAsync(StayForCreationDTO dto)
+//{
+//    // Prevent double booking
+//    var existingStays = await repository.Stay.GetByRoomNoAsync(dto.RoomNo, false);
+//    if (existingStays.Any(s => s.CheckOutAt == null))
+//        throw new StayAlreadyExistsException(dto.RoomNo);
+
+//    var room = await repository.Room.GetRoomByRoomNoAsync(dto.RoomNo, false);
+//    if (room == null)
+//        throw new RoomNotFoundException(dto.RoomNo);
+
+//    var stay = mapper.Map<Stay>(dto);
+
+//    stay.CheckInAt = DateTime.Now;
+
+//    // ✅ IMPORTANT: checkout NOT allowed during creation
+//    stay.CheckOutAt = null;
+
+//    stay.AmountPaid = dto.DepositPaid;
+
+//    stay.PendingAmount = room.Price - stay.AmountPaid;
+//    if (stay.PendingAmount < 0)
+//        stay.PendingAmount = 0;
+
+//    repository.Stay.CreateStay(stay);
+//    repository.Save();
+
+//    return mapper.Map<StayDTO>(stay);
+//}
+
+//public async Task<StayDTO> CreateAsync(StayForCreationDTO dto)
+//{
+//    // Prevent double booking
+//    var existingStays = await repository.Stay.GetByRoomNoAsync(dto.RoomNo, false);
+//    if (existingStays.Any(s => s.CheckOutAt == null))
+//        throw new StayAlreadyExistsException(dto.RoomNo);
+
+//    // Get room by RoomNo
+//    var room = await repository.Room.GetRoomByRoomNoAsync(dto.RoomNo, false);
+//    if (room == null)
+//        throw new RoomNotFoundException(dto.RoomNo);
+
+//    var stay = mapper.Map<Stay>(dto);
+
+//    stay.RoomNo = dto.RoomNo;
+//    stay.CheckInAt = DateTime.Now;
+//    stay.CheckOutAt = null;
+
+//    // ✅ Correct money initialization
+//    stay.DepositPaid = dto.DepositPaid;
+//    stay.AmountPaid = 0;
+
+//    // ✅ Correct pending calculation
+//    stay.PendingAmount = Math.Max(0, room.Price - stay.DepositPaid);
+
+//    repository.Stay.CreateStay(stay);
+//    repository.Save();
+
+//    return mapper.Map<StayDTO>(stay);
+//}
