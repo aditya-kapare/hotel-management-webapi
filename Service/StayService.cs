@@ -109,80 +109,41 @@ namespace Services
             if (stay == null)
                 throw new StayNotFoundException(stayId);
 
-            // ❌ Cannot update after checkout
+         
             if (stay.CheckOutAt != null)
                 throw new InvalidStayOperationException(
                     $"Stay '{stayId}' is already checked out.");
 
-            // ✅ Validate checkout time
-            if (dto.CheckOutAt.HasValue && dto.CheckOutAt.Value < stay.CheckInAt)
-                throw new InvalidStayOperationException(
-                    "Checkout time cannot be before check-in time.");
-
-            // ✅ Room change (if allowed)
+        
             if (dto.RoomNo.HasValue && dto.RoomNo.Value != stay.RoomNo)
             {
-                var oldRoom = stay.Room
-                    ?? throw new RoomNotFoundException(stay.RoomNo);
-
-                oldRoom.AvailabilityStatus = AvailabilityStatus.Available;
-                oldRoom.CleanStatus = CleanStatus.Dirty;
-
                 stay.RoomNo = dto.RoomNo.Value;
             }
 
-            // ✅ Update CheckInAt if provided
-            if (dto.CheckInAt.HasValue)
-                stay.CheckInAt = dto.CheckInAt.Value;
-
-            // ✅ Update deposit if provided
-            if (dto.DepositPaid.HasValue)
-            {
-                if (dto.DepositPaid.Value < 0)
-                    throw new InvalidStayOperationException("Deposit cannot be negative.");
-
-                stay.DepositPaid = dto.DepositPaid.Value;
-            }
-
-            // ✅ Incremental payment
-
+           
             if (dto.AmountPaid.HasValue)
             {
                 if (dto.AmountPaid.Value < 0)
                     throw new InvalidStayOperationException("Amount paid cannot be negative.");
 
-                stay.AmountPaid = dto.AmountPaid.Value;
+                stay.AmountPaid += dto.AmountPaid.Value;
+
             }
 
-
-            // ✅ BILLING LOGIC — ONLY ON CHECKOUT
             if (dto.CheckOutAt.HasValue)
             {
-                //var room = stay.Room
-                //    ?? throw new RoomNotFoundException(stay.RoomNo);
+                if (dto.CheckOutAt.Value < stay.CheckInAt)
+                    throw new InvalidStayOperationException(
+                        "Checkout time cannot be before check-in time.");
 
-                var checkoutAt = dto.CheckOutAt.Value;
+                stay.CheckOutAt = dto.CheckOutAt.Value;
+                stay.PendingAmount = RecalculatePendingAmount(stay);
 
-                //var nights = (int)Math.Ceiling(
-                //    (checkoutAt - stay.CheckInAt).TotalDays);
-
-                //nights = Math.Max(1, nights);
-
-                //var totalCharge = nights * room.Price;
-                //var totalPaid = stay.DepositPaid + stay.AmountPaid;
-
-
-                if (dto.DepositPaid.HasValue || dto.AmountPaid.HasValue)
-                {
-                    stay.PendingAmount = RecalculatePendingAmount(stay);
-                }
-
-                stay.CheckOutAt = checkoutAt;
             }
 
-            repository.Stay.UpdateStay(stay);
             repository.Save();
         }
+
 
 
         // ================= DELETE =================
@@ -275,15 +236,18 @@ namespace Services
             );
         }
 
+  
         private decimal RecalculatePendingAmount(Stay stay)
         {
+            if (stay.CheckOutAt == null)
+                throw new InvalidStayOperationException(
+                    "Pending amount can only be calculated after checkout.");
+
             var room = stay.Room
                 ?? throw new RoomNotFoundException(stay.RoomNo);
 
-            var effectiveCheckout = stay.CheckOutAt ?? DateTime.Now;
-
             var nights = (int)Math.Ceiling(
-                (effectiveCheckout - stay.CheckInAt).TotalDays);
+                (stay.CheckOutAt.Value - stay.CheckInAt).TotalDays);
 
             nights = Math.Max(1, nights);
 
@@ -294,73 +258,9 @@ namespace Services
         }
 
 
-
     }
 
 
 
 }
 
-
-
-
-//public async Task<StayDTO> CreateAsync(StayForCreationDTO dto)
-//{
-//    // Prevent double booking
-//    var existingStays = await repository.Stay.GetByRoomNoAsync(dto.RoomNo, false);
-//    if (existingStays.Any(s => s.CheckOutAt == null))
-//        throw new StayAlreadyExistsException(dto.RoomNo);
-
-//    var room = await repository.Room.GetRoomByRoomNoAsync(dto.RoomNo, false);
-//    if (room == null)
-//        throw new RoomNotFoundException(dto.RoomNo);
-
-//    var stay = mapper.Map<Stay>(dto);
-
-//    stay.CheckInAt = DateTime.Now;
-
-//    // ✅ IMPORTANT: checkout NOT allowed during creation
-//    stay.CheckOutAt = null;
-
-//    stay.AmountPaid = dto.DepositPaid;
-
-//    stay.PendingAmount = room.Price - stay.AmountPaid;
-//    if (stay.PendingAmount < 0)
-//        stay.PendingAmount = 0;
-
-//    repository.Stay.CreateStay(stay);
-//    repository.Save();
-
-//    return mapper.Map<StayDTO>(stay);
-//}
-
-//public async Task<StayDTO> CreateAsync(StayForCreationDTO dto)
-//{
-//    // Prevent double booking
-//    var existingStays = await repository.Stay.GetByRoomNoAsync(dto.RoomNo, false);
-//    if (existingStays.Any(s => s.CheckOutAt == null))
-//        throw new StayAlreadyExistsException(dto.RoomNo);
-
-//    // Get room by RoomNo
-//    var room = await repository.Room.GetRoomByRoomNoAsync(dto.RoomNo, false);
-//    if (room == null)
-//        throw new RoomNotFoundException(dto.RoomNo);
-
-//    var stay = mapper.Map<Stay>(dto);
-
-//    stay.RoomNo = dto.RoomNo;
-//    stay.CheckInAt = DateTime.Now;
-//    stay.CheckOutAt = null;
-
-//    // ✅ Correct money initialization
-//    stay.DepositPaid = dto.DepositPaid;
-//    stay.AmountPaid = 0;
-
-//    // ✅ Correct pending calculation
-//    stay.PendingAmount = Math.Max(0, room.Price - stay.DepositPaid);
-
-//    repository.Stay.CreateStay(stay);
-//    repository.Save();
-
-//    return mapper.Map<StayDTO>(stay);
-//}

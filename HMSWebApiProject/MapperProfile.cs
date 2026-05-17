@@ -20,25 +20,49 @@ namespace HMSWebApiProject
             CreateMap<CustomerForUpdateDTO, Customer>();
 
             CreateMap<Customer, CustomerBriefDTO>();
+ 
+
             CreateMap<Stay, StayDTO>()
-                .ForCtorParam("RoomPrice",
-                    opt => opt.MapFrom(src => src.Room.Price))
+    .ForCtorParam(nameof(StayDTO.StayId),
+        opt => opt.MapFrom(s => s.StayId))
 
-                .ForCtorParam("Customer",
-                    opt => opt.MapFrom(src =>
-                        src.Customer == null
-                            ? null
-                            : new CustomerBriefDTO(
-                                src.Customer.IdentityId,
-                                src.Customer.Name,
-                                src.Customer.MobileNo
-                            )
-                    ));
+    .ForCtorParam(nameof(StayDTO.RoomNo),
+        opt => opt.MapFrom(s => s.RoomNo))
 
+    .ForCtorParam(nameof(StayDTO.CustomerIdentityId),
+        opt => opt.MapFrom(s => s.CustomerIdentityId))
+
+    .ForCtorParam(nameof(StayDTO.CheckInAt),
+        opt => opt.MapFrom(s => s.CheckInAt))
+
+    .ForCtorParam(nameof(StayDTO.CheckOutAt),
+        opt => opt.MapFrom(s => s.CheckOutAt))
+
+    .ForCtorParam(nameof(StayDTO.RoomPrice),
+        opt => opt.MapFrom(s => s.Room.Price))
+
+    .ForCtorParam(nameof(StayDTO.DepositPaid),
+        opt => opt.MapFrom(s => s.DepositPaid))
+
+    .ForCtorParam(nameof(StayDTO.AmountPaid),
+        opt => opt.MapFrom(s => s.AmountPaid))
+
+    .ForCtorParam(nameof(StayDTO.PendingAmount),
+        opt => opt.MapFrom(s => s.PendingAmount))
+
+    .ForCtorParam(nameof(StayDTO.Customer),
+        opt => opt.MapFrom(s =>
+            s.Customer == null
+                ? null
+                : new CustomerBriefDTO(
+                    s.Customer.IdentityId,
+                    s.Customer.Name,
+                    s.Customer.MobileNo
+                )));
 
 
             CreateMap<StayForCreationDTO, Stay>();
-            CreateMap<StayForUpdateDTO, Stay>();
+          //  CreateMap<StayForUpdateDTO, Stay>();
 
             CreateMap<CabDriver, CabDriverDTO>();
             CreateMap<CabDriverForCreationDTO, CabDriver>();

@@ -73,16 +73,16 @@ namespace Services
 
         public async Task<DropPickRequestDTO> CreateAsync(DropPickRequestForCreationDTO dto)
         {
-            // ✅ Map DTO → Entity
+          
             var request = mapper.Map<DropPickRequest>(dto);
 
-            // ✅ Business Rule: set requested time
+         
             request.RequestedAt = DateTime.Now;
 
-            // ✅ Business Rule: default status
+        
             request.Status = DropPickStatus.Assigned;
 
-            // ✅ Business Rule: check if driver is busy
+         
 
 
             var availableDrivers =
@@ -107,28 +107,27 @@ namespace Services
             if (request == null)
                 throw new DropPickRequestNotFoundException(requestId);
 
-            // ❌ Completed / Cancelled requests are immutable
+           
             if (request.Status == DropPickStatus.Completed ||
                 request.Status == DropPickStatus.Cancelled)
                 throw new InvalidDropPickRequestOperationException(
                     "Completed or cancelled requests cannot be modified.");
 
-            // ✅ RequestedAt (allowed in Web App)
+        
             if (dto.RequestedAt.HasValue)
                 request.RequestedAt = dto.RequestedAt.Value;
 
-            // ✅ Notes
+        
             if (!string.IsNullOrWhiteSpace(dto.Notes))
                 request.Notes = dto.Notes;
 
-            // ✅ RequestType (only before InProgress)
+           
             if (dto.RequestType.HasValue &&
                 request.Status == DropPickStatus.Assigned)
             {
                 request.RequestType = (RequestType)dto.RequestType.Value;
             }
 
-            // ✅ Driver reassignment (only before InProgress)
             if (dto.DriverId.HasValue &&
                 request.Status == DropPickStatus.Assigned)
             {
@@ -141,7 +140,7 @@ namespace Services
                 request.DriverId = dto.DriverId.Value;
             }
 
-            // ✅ Status transition
+
             if (dto.Status.HasValue &&
                 dto.Status.Value != (int)request.Status)
             {
@@ -173,13 +172,14 @@ namespace Services
         // ---------------- PRIVATE HELPERS ----------------
 
         private static bool IsValidStatusTransition(
-            DropPickStatus current,
-            DropPickStatus next)
+    DropPickStatus current,
+    DropPickStatus next)
         {
             return current switch
             {
                 DropPickStatus.Assigned =>
                     next == DropPickStatus.InProgress ||
+                    next == DropPickStatus.Completed ||
                     next == DropPickStatus.Cancelled,
 
                 DropPickStatus.InProgress =>

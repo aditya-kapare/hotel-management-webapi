@@ -15,7 +15,7 @@ namespace HMSWebApiProject.Controllers
             _service = service;
         }
 
-        // 1️⃣ View all drop-pick requests
+        //View all drop-pick requests
         // GET /api/droppickrequests
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -24,7 +24,7 @@ namespace HMSWebApiProject.Controllers
             return Ok(requests);
         }
 
-        // 2️⃣ View drop-pick request by request ID
+        //View drop-pick request by request ID
         // GET /api/droppickrequests/{requestId:int}
         [HttpGet("{requestId:int}")]
         public async Task<IActionResult> GetById(int requestId)
@@ -36,7 +36,7 @@ namespace HMSWebApiProject.Controllers
             return Ok(request);
         }
 
-        // 3️⃣ View drop-pick requests by stay ID
+        //View drop-pick requests by stay ID
         // GET /api/droppickrequests/stay/{stayId:int}
         [HttpGet("stay/{stayId:int}")]
         public async Task<IActionResult> GetByStay(int stayId)
@@ -45,7 +45,7 @@ namespace HMSWebApiProject.Controllers
             return Ok(requests);
         }
 
-        // 4️⃣ View drop-pick requests by driver ID
+        //View drop-pick requests by driver ID
         // GET /api/droppickrequests/driver/{driverId:int}
         [HttpGet("driver/{driverId:int}")]
         public async Task<IActionResult> GetByDriver(int driverId)
@@ -54,7 +54,7 @@ namespace HMSWebApiProject.Controllers
             return Ok(requests);
         }
 
-        // 5️⃣ View available cab drivers for drop-pick
+        //View available cab drivers for drop-pick
         // GET /api/droppickrequests/drivers/available
 
         [HttpGet("drivers/available")]
@@ -65,7 +65,7 @@ namespace HMSWebApiProject.Controllers
         }
 
 
-        // 6️⃣ Create a new drop-pick request
+        //Create a new drop-pick request
         // POST /api/droppickrequests
         [HttpPost]
         public async Task<IActionResult> Create(
@@ -79,7 +79,7 @@ namespace HMSWebApiProject.Controllers
                 created);
         }
 
-        // 7️⃣ Update drop-pick request (status change)
+        //Update drop-pick request (status change)
         // PUT /api/droppickrequests/{requestId:int}
         [HttpPut("{requestId:int}")]
         public async Task<IActionResult> Update(
@@ -91,7 +91,7 @@ namespace HMSWebApiProject.Controllers
             return NoContent();
         }
 
-        // 8️⃣ Delete drop-pick request by request ID
+        //Delete drop-pick request by request ID
         // DELETE /api/droppickrequests/{requestId:int}
         [HttpDelete("{requestId:int}")]
         public async Task<IActionResult> Delete(int requestId)

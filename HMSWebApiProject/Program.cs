@@ -56,9 +56,9 @@ namespace HMSWebApiProject
             //    var db = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
             //    await SeedRunner.RunAsync(db);
             //}
-            // Configure the HTTP request pipeline.
+            
 
-            // Configure the HTTP request pipeline.(middelware)
+    
             var logger = app.Services.GetRequiredService<ILoggerManager>();
             app.ConfigureExceptionHandler(logger);
             if (app.Environment.IsProduction())
@@ -78,10 +78,7 @@ namespace HMSWebApiProject
 
             app.UseAuthorization();
 
-            //app.Run(async context => {
-            //    await context.Response.WriteAsync("Hello from Aboli's middleware");
-            //});
-
+        
             app.MapControllers();
 
             app.Run();

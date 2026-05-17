@@ -7,7 +7,7 @@ namespace DTOs.Stay
     //int StayId,
     int? RoomNo,
     DateTime? CheckInAt,
-    decimal? DepositPaid,
+
     decimal? AmountPaid,
     DateTime? CheckOutAt
 

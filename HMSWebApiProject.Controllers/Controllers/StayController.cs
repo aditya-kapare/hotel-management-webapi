@@ -16,7 +16,7 @@ namespace HMSWebApiProject.Controllers
             _stayService = stayService;
         }
 
-        // 1️⃣ View List of Stays
+        // View List of Stays
         // GET /api/stays
         [HttpGet]
         public async Task<IActionResult> GetAllStays()
@@ -25,7 +25,7 @@ namespace HMSWebApiProject.Controllers
             return Ok(stays);
         }
 
-        // 2️⃣ View Stay Details by Stay ID
+        // View Stay Details by Stay ID
         // GET /api/stays/{stayId:int}
         [HttpGet("{stayId:int}")]
         public async Task<IActionResult> GetStayById(int stayId)
@@ -37,7 +37,7 @@ namespace HMSWebApiProject.Controllers
             return Ok(stay);
         }
 
-        // 3️⃣ View Room Associated with a Stay
+        // View Room Associated with a Stay
         // GET /api/stays/{stayId:int}/rooms/{roomNo:int}
         [HttpGet("{stayId:int}/rooms/{roomNo:int}")]
         public async Task<IActionResult> GetRoomForStay(int stayId, int roomNo)
@@ -53,7 +53,7 @@ namespace HMSWebApiProject.Controllers
             });
         }
 
-        // 4️⃣ View Customer Associated with a Stay
+        // View Customer Associated with a Stay
         // GET /api/stays/{stayId:int}/customers/{customerId}
         [HttpGet("{stayId:int}/customers/{customerId}")]
         public async Task<IActionResult> GetCustomerForStay(int stayId, string customerId)
@@ -71,7 +71,7 @@ namespace HMSWebApiProject.Controllers
             });
         }
 
-        // 5️⃣ View Stays by Date
+        // View Stays by Date
 
         // GET /api/stays/by-date/2024-05-06
         [HttpGet("by-date/{date}")]
@@ -82,7 +82,7 @@ namespace HMSWebApiProject.Controllers
         }
 
 
-        // 6️⃣ Create Stay (Check-in)
+        // Create Stay (Check-in)
         // POST /api/stays
         [HttpPost]
         public async Task<IActionResult> CreateStay([FromBody] StayForCreationDTO dto)
@@ -96,7 +96,7 @@ namespace HMSWebApiProject.Controllers
             );
         }
 
-        // 7️⃣ Update Stay Details (Check-out)
+        // Update Stay Details (Check-out)
         // PUT /api/stays
 
         [HttpPut("{stayId:int}")]
@@ -113,7 +113,7 @@ namespace HMSWebApiProject.Controllers
 
 
 
-        // 8️⃣ Delete Stay by Stay ID
+        //Delete Stay by Stay ID
         // DELETE /api/stays/{stayId:int}
         [HttpDelete("{stayId:int}")]
         public async Task<IActionResult> DeleteStay(int stayId)
@@ -122,7 +122,7 @@ namespace HMSWebApiProject.Controllers
             return NoContent();
         }
 
-        // 9️⃣ View Active Stays
+        // View Active Stays
         // GET /api/stays/active
         [HttpGet("active")]
         public async Task<IActionResult> GetActive()
@@ -130,7 +130,7 @@ namespace HMSWebApiProject.Controllers
             return Ok(await _stayService.GetActiveAsync());
         }
 
-        // 10️⃣ View Past Stays
+        //View Past Stays
         // GET /api/stays/past
         [HttpGet("past")]
         public async Task<IActionResult> GetPast()
@@ -139,7 +139,7 @@ namespace HMSWebApiProject.Controllers
         }
 
 
-        // 11️⃣ Check-out a Stay
+        //Check-out a Stay
         // POST /api/stays/{stayId:int}/checkout
         [HttpPost("{stayId:int}/checkout")]
         public async Task<IActionResult> CheckOut(
@@ -149,7 +149,7 @@ namespace HMSWebApiProject.Controllers
             return Ok(await _stayService.CheckOutAsync(stayId, dto));
         }
 
-        // 12️⃣ Get Billing Summary for a Stay
+        //Get Billing Summary for a Stay
         // GET /api/stays/{stayId:int}/billing
         [HttpGet("{stayId:int}/billing")]
         public async Task<IActionResult> GetBilling(int stayId)
