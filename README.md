@@ -21,8 +21,8 @@ ASP.NET Core Web API for managing hotel operations including stays, rooms, custo
 /api/stays 
 /api/customers 
 /api/rooms 
-/api/drop-pick-requests 
-/api/cab-drivers 
+/api/droppickrequests 
+/api/cabdrivers 
  
 ## Team 
 - Aditi Mane 
