@@ -28,3 +28,32 @@ ASP.NET Core Web API for managing hotel operations including stays, rooms, custo
 - Aditi Mane 
 - Aditya 
 - Aboli 
+ 
+## Project Structure 
+ 
+HotelManagementWebApi 
+| 
+|-- Contracts 
+| 
+|-- DTOs 
+|    |-- DataTransferObjects 
+| 
+|-- Entities 
+|    |-- Enums 
+|    |-- ErrorModels 
+|    |-- Exceptions 
+|    |-- Models 
+| 
+|-- HMSWebApiProject 
+|    |-- ContextFactory 
+|    |-- Extensions 
+|    |-- internal_log 
+|    |-- appsettings.json 
+|    |-- MapperProfile.cs 
+|    |-- Program.cs 
+| 
+|-- Controllers 
+|-- Repositories 
+|-- Services 
+|-- Services.Contracts 
+|-- LoggerService 
